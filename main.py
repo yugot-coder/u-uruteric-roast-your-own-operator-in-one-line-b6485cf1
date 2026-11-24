@@ -13,6 +13,7 @@ clock. The entry is CANDIDATES[SELECTED], written to
 trailing newline, so the file is exactly the line, byte for byte.
 """
 
+import hashlib
 import os
 
 CANDIDATES = [
@@ -52,9 +53,9 @@ def main() -> None:
         f.write(entry)
     # Read-back verification: the file on disk must be exactly the
     # selected line, byte for byte, or the run fails loudly.
-    with open(out_path, "r", encoding="utf-8") as f:
+    with open(out_path, "rb") as f:
         written = f.read()
-    if written != entry:
+    if hashlib.sha256(written).hexdigest() != hashlib.sha256(entry.encode("utf-8")).hexdigest():
         raise SystemExit("read-back mismatch: entry.txt != selected line")
 
 
